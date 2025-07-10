@@ -13,7 +13,7 @@
 
 ## 👩‍💻 Author
 
-- ** Samrakshyan Adhikari **
+- Samrakshyan Adhikari 
 - Undergraduate Researcher, Texas State University
 - Contact: nbb38@txstate.edu
   
