@@ -15,7 +15,8 @@
 
 - **[Your Name]**
 - Undergraduate Researcher, Texas State University
-- Contact: [your email or LinkedIn]
+- Contact: nbb38@txstate.edu
+  
 
 ---
 
