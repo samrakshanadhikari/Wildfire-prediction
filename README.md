@@ -1,4 +1,4 @@
-# 🔥 Wildfire Ignition Risk Prediction in California (2000–2025)
+ # 🔥 Wildfire Ignition Risk Prediction in California (2000–2025)
 
 This project presents a **deep learning pipeline for wildfire ignition risk modeling** in California using multi-source remote sensing data and event-based evaluation. The model predicts pixel-level burn probability maps from environmental conditions prior to ignition.
 
@@ -107,7 +107,9 @@ To improve generalization:
 ## 🔍 Example Result — Atlas Fire (October 2017)
 
 <p align="center">
-<img width="1543" height="398" alt="Atlassss" src="https://github.com/user-a
+  <img width="1543" height="398" alt="Atlassss" src="https://github.com/user-attachments/assets/d15c63b2-f25e-4475-b27f-b29d26eae52b" />
+
+
   <img width="1783" height="424" alt="cedar" src="https://github.com/user-attachments/assets/cf55dfcd-d2fb-4019-aebc-ffe227719783" />
 ttachments/assets/599fefa9-8f76-43be-ba93-376951078cd2" />
 
