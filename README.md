@@ -10,7 +10,7 @@
 ## 📄 Research Poster
 
 <p align="center">
-  <img width="1000" alt="Research Poster" src="assets/poster.png" />
+  <img width="1000" alt="Research Poster" src="https://raw.githubusercontent.com/samrakshanadhikari/Wildfire-prediction/main/assets/poster.png" />
 </p>
 
 > 📥 [Download Full Poster (PDF)](assets/poster.pdf)
