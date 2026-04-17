@@ -1,9 +1,10 @@
- # 🔥 Wildfire Ignition Risk Prediction in California (2000–2025)
+# 🔥 Short-Term Wildfire Burned Area Prediction in California Using Multi-Source Environmental Features and Deep Learning
 
-This project presents a **deep learning pipeline for wildfire ignition risk modeling** in California using multi-source remote sensing data and event-based evaluation. The model predicts pixel-level burn probability maps from environmental conditions prior to ignition.
+This project presents a **deep learning pipeline for wildfire burned area prediction** in California using multi-source remote sensing and environmental data. The model predicts pixel-level burn probability maps from environmental conditions and is evaluated on temporally held-out fire seasons.
 
-The goal is not only to predict burned pixels, but to **evaluate cross-event generalization**:  
-> Can a model trained on past wildfires predict a completely unseen fire in a different year and region?
+> **Presented at:** TXST STEM Conference — Poster #36F-U  
+> **Authors:** Samrakshyan Adhikari¹, Eunsang Cho²  
+> ¹Department of Computer Science, ²Ingram College of Engineering, Texas State University, Texas, USA
 
 ---
 
@@ -11,146 +12,165 @@ The goal is not only to predict burned pixels, but to **evaluate cross-event gen
 
 To develop and evaluate a machine learning framework that:
 
-- Learns spatial patterns of wildfire risk from historical events
-- Predicts generalizable risk maps for unseen wildfires
-- Handles severe class imbalance
-- Produces interpretable, pixel-level probabilistic outputs
+- Learns spatial patterns of wildfire risk from historical burned area events
+- Generalizes to unseen future fire seasons (2020–2024) after training on past data (2001–2017)
+- Handles severe class imbalance (fire pixels are a small minority)
+- Produces interpretable, pixel-level probabilistic burn probability maps
+
+---
+
+## ❓ Research Questions
+
+1. How accurately can burned area extent be predicted using lagged environmental and vegetation data?
+2. How well does the model generalize to unseen regions and future wildfire seasons (2020–2024)?
+3. Which environmental features (e.g., NDVI, EVI, slope, climate variables) are most important for burned area prediction?
+
+---
+
+## 🗺️ Study Area
+
+California, United States — a region characterized by a Mediterranean climate with dry summers and hot, dry conditions that increase wildfire risk.
 
 ---
 
 ## 🛰️ Data Sources
 
 ### **Burned Area (Labels)**
-- **MTBS / MODIS Burned Area**
-- Seasonal fire footprints aggregated into binary burned vs non-burned targets
+- **MODIS Burned Area Product (MCD64A1)** — binary burned vs. non-burned targets
 
-### **Environmental Predictors (14 bands)**
+### **Environmental Predictors**
 
-| Category | Dataset | Variables |
-|----------|--------|-----------|
-| Climate  | GRIDMET | tmax, precipitation, wind speed, humidity |
-| Drought  | TerraClimate | PDSI |
-| Vegetation | MODIS | NDVI |
-| Fuels | LFMC Mapper | Live fuel moisture |
-| Topography | SRTM | elevation, slope, aspect_sin, aspect_cos |
-| Land cover | NLCD | landcover class |
-| Temporal lags | Derived | 3-month accumulated precipitation, 3-month mean VPD |
+| Type | Variable | Full Name | Value | Resolution | Source |
+|------|----------|-----------|-------|------------|--------|
+| Vegetation | NDVI | Normalized Difference Vegetation Index | Mean | 250→500m | MODIS MOD13Q1 |
+| Vegetation | EVI | Enhanced Vegetation Index | Mean | 250→500m | MODIS MOD13Q1 |
+| Vegetation | NDVI_change | NDVI Temporal Change | Difference (t-1 − t-2) | 250→500m | Derived |
+| Vegetation | EVI_change | EVI Temporal Change | Difference (t-1 − t-2) | 250→500m | Derived |
+| Climatic | Temp_t1 | Temperature (Lag 1 Month) | Monthly Mean (°C) | ~4,000m | GRIDMET |
+| Climatic | Temp_t2 | Temperature (Lag 2 Months) | Monthly Mean (°C) | ~4,000m | GRIDMET |
+| Climatic | Prec_t1 | Precipitation (Lag 1 Month) | Monthly Sum | ~4,000m | GRIDMET |
+| Climatic | Prec_t2 | Precipitation (Lag 2 Months) | Monthly Sum | ~4,000m | GRIDMET |
+| Climatic | Wind_t1 | Wind Speed (Lag 1 Month) | Monthly Mean | ~4,000m | GRIDMET |
+| Climatic | Wind_t2 | Wind Speed (Lag 2 Months) | Monthly Mean | ~4,000m | GRIDMET |
+| Climatic | VPD_t1 | Vapor Pressure Deficit (Lag 1 Month) | Monthly Mean | ~4,000m | GRIDMET |
+| Climatic | VPD_t2 | Vapor Pressure Deficit (Lag 2 Months) | Monthly Mean | ~4,000m | GRIDMET |
+| Physical | Elevation | Elevation | Static | 30m | SRTM DEM |
+| Physical | Slope | Terrain Slope | Derived | 30m | SRTM DEM |
+| Physical | Aspect | Terrain Aspect | Derived | 30m | SRTM DEM |
+| Land Cover | Landcover | Land Cover Classification | Annual Class | 500m | MODIS MCD12Q1 |
 
 ---
 
 ## 🌎 Processing Pipeline (Google Earth Engine)
 
-Environmental variables are processed and exported from Google Earth Engine:
-
-1. All rasters reprojected to **EPSG:5070** at 500m resolution.
-2. Environmental data aggregated to monthly means/sums.
-3. Lagged features computed (previous-month, 3-month windows).
-4. EVM (Environmental Variable Map) stacks built per fire event.
-5. Rasters exported to **Google Cloud Storage**.
-6. 32×32 spatial patches extracted for training.
+1. All rasters reprojected to **EPSG:5070** at 500m resolution
+2. Environmental data aggregated to monthly means/sums
+3. Lagged features computed over 2-month windows
+4. Raster stacks built per time period
+5. Exported to **Google Cloud Storage**
+6. **32×32 spatial patches** extracted for training
 
 ---
 
 ## 🧠 Model
 
-A **small U-Net** segmentation network is trained for per-pixel burned-area prediction.
+An **Attention U-Net** segmentation network is trained for per-pixel burned area prediction.
 
-### Architecture:
+### Architecture
 
-- Encoder:
-  - (C → 32) → (32 → 64) → max pooling
-- Bottleneck:
-  - (64 → 128)
-- Decoder:
-  - Transposed convolutions with skip connections
-- Output:
-  - 1-channel burn probability map
+- **Encoder:** Convolutional blocks with progressive feature extraction
+- **Bottleneck:** Deepest feature representation
+- **Decoder:** Transposed convolutions with skip connections
+- **Attention Gates:** Suppress irrelevant spatial activations and focus on fire-prone regions
+- **Output:** 1-channel burn probability map (sigmoid activation)
 
 ---
 
 ## 🎯 Training Strategy
 
-### **Cross-Event Evaluation (Leave-One-Event-Out)**
+### Temporal Train/Test Split
 
-For each wildfire event:
+| Split | Period | Patches | Fire Pixel % |
+|-------|--------|---------|--------------|
+| Train | 2001–2017 | 17,868 | 3.10% |
+| Test | 2020–2024 | 47,328 | 6.89% |
 
-- **Training:** all other events
-- **Testing:** the held-out fire
-- No spatial leakage
-- No temporal overlap
-
-This simulates **real deployment**: predicting future wildfires from past ones.
-
----
+- No temporal leakage between splits
+- Simulates **real deployment**: training on historical fires, predicting future seasons
 
 ### Loss & Optimization
 
 - **Loss:** `BCEWithLogitsLoss` with class-balanced weighting
 - **Optimizer:** Adam (lr=1e-3)
 - **Batch size:** 32
-- **Early stopping:** patience=12 (based on test IoU)
-- **Epochs:** up to 80 per fold
-
----
+- **Early stopping:** patience=12 (based on validation IoU)
+- **Epochs:** up to 80
 
 ### Data Augmentation
 
-To improve generalization:
-
-- Random flips and 90° rotations
+- Random horizontal/vertical flips and 90° rotations
 - Brightness/contrast jitter
-- Gaussian noise
+- Gaussian noise injection
 - Random band dropout
 
 ---
 
-## 🔍 Example Result — Atlas Fire (October 2017)
+## 📊 Results
 
-<p align="center">
-  <img width="1543" height="398" alt="Atlassss" src="https://github.com/user-attachments/assets/d15c63b2-f25e-4475-b27f-b29d26eae52b" />
+### Model Performance (Test Set: 2020–2024)
 
+| Metric | Value |
+|--------|-------|
+| F1-Score | 0.1800 |
+| Precision | 0.2169 |
+| Recall | 0.1888 |
+| AUC-PR | 0.1628 |
 
-  <img width="1783" height="424" alt="cedar" src="https://github.com/user-attachments/assets/cf55dfcd-d2fb-4019-aebc-ffe227719783" />
-ttachments/assets/599fefa9-8f76-43be-ba93-376951078cd2" />
+The Attention U-Net demonstrates basic capability in learning wildfire patterns but moderate performance reflects the challenge of cross-temporal generalization and severe class imbalance.
 
-<img width="1641" height="398" alt="thomas" src="https://github.com/user-attachments/assets/6bc24fa0-0fd6-4b24-a6be-65314cb6416c" />
+### Feature Variable Importance
 
-</p>
+- **Vegetation indices (NDVI, EVI)** are the most important predictors
+- **Climate variables** (temperature, precipitation, VPD) contribute moderately
+- **Terrain features** (elevation, slope) have lower relative influence
 
-**Panels:**
-1. Raw MODIS burned area  
-2. Cleaned binary target  
-3. Burn probability predicted from prior-month conditions  
-4. Confusion map (TP=green, FP=red, FN=blue)
+### Key Observations
 
-**Metric (held-out event):**
-- IoU = 0.219  
-- F1-score = 0.359  
-
-This illustrates the difficulty of predicting ignition patterns based solely on environmental conditions.
-
+- The model captures major burned regions but misses smaller fire areas (false negatives)
+- Some false alarms (false positives) occur in vegetation-dense regions
+- High class imbalance leads to a precision-recall tradeoff
 
 ---
 
 ## ✅ Strengths of This Approach
 
-- Event-based evaluation (not random splits)
-- Realistic generalization testing
-- Interpretable probability outputs
-- Scalable via cloud-based preprocessing
-- Emphasis on failure cases (confusion maps, IoU, F1)
-- Clean separation of training vs inference pipelines
+- Temporal generalization testing (train on past, test on future seasons)
+- Attention mechanism improves spatial focus on fire-prone regions
+- Interpretable probability outputs and confusion maps
+- Scalable cloud-based preprocessing via Google Earth Engine
+- Feature importance analysis for domain interpretability
+
+---
+
+## 🔭 Future Work
+
+- **Advanced Loss Functions:** Focal Loss and Tversky Loss to improve recall on minority fire pixels
+- **Temporal Sequence Modeling:** Replace 2-month lagged static features with **7-day temporal sequences** using **Conv-LSTM** to capture short-term fire weather dynamics
+- **Transformer-Based Models:** Explore Temporal U-Net and Transformer architectures for long-range spatial dependencies
+- **Additional Data Sources:** Wildfire datasets post-2018, drought indices, soil moisture
+- **Post-Processing:** Morphological region-growing for better fire boundary delineation
 
 ---
 
 ## 📚 References
 
-- MTBS Burned Area Dataset  
-- MODIS Vegetation Indices  
-- GRIDMET Climate Data  
-- TerraClimate Drought Index  
-- NLCD Land Cover  
-- Google Earth Engine  
+- Zhang, Q., Ge, L., Zhang, R., Metternicht, G. I., Liu, C., & Du, Z. (2021). Deep-learning-based burned area mapping using the synergy of Sentinel-1 & Sentinel-2 data. *Remote Sensing of Environment*, 264, 112575.
+- MODIS Burned Area Product (MCD64A1)
+- MODIS Vegetation Indices
+- GRIDMET Climate Data
+- TerraClimate Drought Index
+- NLCD Land Cover
+- Google Earth Engine
 
 ---
 
@@ -160,7 +180,7 @@ This illustrates the difficulty of predicting ignition patterns based solely on 
 B.S. Computer Science (Computer Engineering), Honors Program  
 Texas State University  
 Portfolio: https://samrakshanadhikari.github.io/WebsitePortfolio/  
-Email: samrakshanadhikari@gmail.com  
+Email: samrakshanadhikari@gmail.com
 
 ---
 
