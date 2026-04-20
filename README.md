@@ -175,7 +175,7 @@ California, United States — a region characterized by a Mediterranean climate 
 
 ### Result 3 — Prediction Maps
 <p align="center">
-  <img width="1000" alt="Test Set Predictions" src="assets/test_set_predictions.png" />
+  <img width="1000" alt="Test Set Predictions" src="assets/Test%20set%20Predictions.png" />
   <br><em>Figure 8: Test Set Predictions<br>
   Model predictions on unseen wildfire data (2019–2024)</em>
 </p>
