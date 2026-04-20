@@ -34,10 +34,6 @@ Wildfires are increasing due to the combined effects of climate change and prolo
 
 California, United States — a region characterized by a Mediterranean climate with wet winters and hot, dry summers that increase wildfire risk. Study period: **2001–2024**.
 
-<p align="center">
-  <img width="500" alt="Study Area - California" src="assets/study_area.png" />
-  <br><em>Figure 1: Study area — California</em>
-</p>
 
 ---
 
@@ -69,12 +65,7 @@ California, United States — a region characterized by a Mediterranean climate 
 
 ---
 
-## 🌎 Methodology
 
-<p align="center">
-  <img width="600" alt="Methodology Flowchart" src="assets/methodology_flowchart.png" />
-  <br><em>Figure 2: Methodology Flowchart</em>
-</p>
 
 ### Processing Pipeline
 
@@ -150,7 +141,7 @@ California, United States — a region characterized by a Mediterranean climate 
 ### Result 2 — Feature Variable Importance
 
 <p align="center">
-  <img width="700" alt="Feature Importance" src="assets/Feature%20Importance.png" />
+  <img width="700" alt="Feature Importance" src="assets/Importance.png" />
   <br><em>Figure 3: Feature Importance — Gradient Sensitivity (All Bands Ranked)</em>
 </p>
 
