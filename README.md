@@ -13,7 +13,6 @@
   <img width="1000" alt="Research Poster" src="https://raw.githubusercontent.com/samrakshanadhikari/Wildfire-prediction/main/assets/poster.png" />
 </p>
 
-> 📥 [Download Full Poster (PDF)](assets/poster.pdf)
 
 ---
 
@@ -175,11 +174,10 @@ California, United States — a region characterized by a Mediterranean climate 
 ---
 
 ### Result 3 — Prediction Maps
-
 <p align="center">
-  <img width="1000" alt="Prediction Maps" src="assets/prediction_maps.png" />
-  <br><em>Figure 7: Prediction Maps<br>
-  🟩 TP = Correct Background &nbsp; 🟥 FN = Missed Fire &nbsp; 🟦 FP = False Alarm &nbsp; 🟨 TP = Correct Fire</em>
+  <img width="1000" alt="Test Set Predictions" src="assets/test_set_predictions.png" />
+  <br><em>Figure 8: Test Set Predictions<br>
+  Model predictions on unseen wildfire data (2019–2024)</em>
 </p>
 
 - Model captures major burned regions but misses smaller fire areas (FN)
