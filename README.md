@@ -120,19 +120,16 @@ California, United States — a region characterized by a Mediterranean climate 
 ### Result 1 — Model Training & Performance
 
 <p align="center">
-  <img width="900" alt="Training Curves" src="assets/training_curves.png" />
+  <img width="900" alt="Training Curves" src="assets/Training.png" />
   <br><em>Figure 4: Training Curves (split 2001–2017)</em>
 </p>
 
 <p align="center">
-  <img width="600" alt="Precision-Recall Curve" src="assets/precision_recall_curve.png" />
+  <img width="600" alt="Test curve" src="assets/Test.png" />
   <br><em>Figure 5: Precision-Recall Curve — Test Set (2020–2024)</em>
 </p>
 
-<p align="center">
-  <img width="600" alt="Confusion Matrix" src="assets/confusion_matrix.png" />
-  <br><em>Figure 6: Confusion Matrix — Pixel-Level Evaluation (Test Set 2020–2024)</em>
-</p>
+
 
 #### Metrics (Test Set: 2020–2024)
 
@@ -153,7 +150,7 @@ California, United States — a region characterized by a Mediterranean climate 
 ### Result 2 — Feature Variable Importance
 
 <p align="center">
-  <img width="700" alt="Feature Importance" src="assets/feature_importance.png" />
+  <img width="700" alt="Feature Importance" src="assets/Feature%20Importance.png" />
   <br><em>Figure 3: Feature Importance — Gradient Sensitivity (All Bands Ranked)</em>
 </p>
 
